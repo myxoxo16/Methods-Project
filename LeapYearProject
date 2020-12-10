@@ -1,0 +1,148 @@
+package Methods;
+import java.io.*;
+public class MethodProject {
+
+	/*
+	 * Merna
+	 * October 21,2020
+	 * Description: Checks if dates from the input file are part of leap years and then outputs those dates to the output file.
+	 */
+
+	/** 
+	 * Determine if the year is a leap year.
+	 * pre: none
+	 * post: True or False is returned
+	 */
+	public static boolean isLeapYear(int year) {
+		if (year % 4 != 0) //checks if year is not divisible by 4
+		{
+			return false;//returns false if year is not divisible by 4
+		} 
+		else if (year % 400 == 0)//checks if year is divisible by 400
+		{
+			return true;//returns true if year is divisible by 400
+		} 
+		else if (year % 100 == 0)//checks if year is divisible by 100
+		{
+			return false;//returns false if year is divisible by 100
+		} 
+		else 
+		{
+			return true;//otherwise returns true if all preceding conditions are unmet.
+		}
+
+	}//end of function: isLeapYear()
+	/**
+	 * determine if the date is valid by checking the specific month and days 
+	 * pre: none
+	 * post: validDate is returned
+	 */
+	public static boolean checkMonth(boolean leapYear, int day, int month, int year)
+	{
+		boolean validDate = false;
+		if (month == 4 ||month == 6||month == 9||month == 11)// these are the months with 30 days
+		{
+			if (day <= 30)
+			{
+				validDate = true;
+			}
+		}
+		else if (month == 2) // this is February
+		{
+			if (leapYear == true && day <=29)
+				validDate = true;
+			else if( leapYear == false && day <= 28)
+				validDate = true;
+
+		}
+
+		else //these are the months with 31 days
+		{
+			validDate = true;
+		}
+		return validDate;
+	}
+
+	/*
+	 * check if the date is valid by checking the years and then executing the rest accordingly 
+	 * pre: none
+	 * post: validDate is returned
+	 */
+	public static boolean isValidDate(boolean leapYear, int year, int day, int month)
+	{
+		boolean validDate = false;
+		if(year < 2020 && year >=1 && day <= 31 && month <=12)
+		{
+			validDate = checkMonth(leapYear, day, month, year);
+		}
+		else if (year == 2020 && day <= 31 && month <=10)// only executes if it is in 2020 (this year)
+		{
+			if (month == 10 && day> 20)// today's date is 10/20/2020
+			{
+				validDate = false;// yeah, I know that I didn't need to add this but it looked weird to leave it empty
+			}
+			else
+			{
+				validDate = checkMonth(leapYear, day, month, year);
+			}
+		}
+
+		return validDate;
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//create files
+		File inFile = new File("Input.txt");
+		File outFile = new File("Ouput.txt");
+		FileReader in;
+		BufferedReader readFile;
+		FileWriter out;
+		BufferedWriter writeFile;
+
+		Boolean leapYear, validDate;
+		try
+		{
+			//Open file for reading
+			in = new FileReader(inFile);
+			readFile = new BufferedReader(in);
+
+			//Open file for writing
+			out = new FileWriter(outFile);
+
+			writeFile = new BufferedWriter(out);
+			String line;
+			while ((line = readFile.readLine()) != null ) 
+			{
+
+				String fileLine [] = line.split("/");
+
+				int year = Integer.parseInt(fileLine[2]);
+				int day = Integer.parseInt(fileLine[1]);
+				int month = Integer.parseInt(fileLine[0]);
+
+				leapYear = isLeapYear(year);
+				validDate = isValidDate(leapYear, year, day, month);
+
+				if (validDate)
+				{
+					writeFile.write(line);
+					writeFile.newLine();
+				}	
+			} 
+			//Close input file
+			readFile.close();
+			in.close();
+
+			//Close output file
+			writeFile.close();
+			out.close();
+		}
+		catch (IOException e) 
+		{
+			System.out.println("Problem reading file.");
+			System.err.println("IOException: " + e.getMessage());
+		}
+	}
+
+}
